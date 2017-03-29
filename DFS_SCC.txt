@@ -1,0 +1,151 @@
+#include<iostream>
+using namespace std;
+#define WHITE -1
+#define GREY 0
+#define BLACK 1
+int vertices,color[1000],time,d[1000],p[1000],f[1000];
+int Graph[1000][1000];
+int c;
+int GraphT[1000][1000],index[1000];
+void DFS();
+void DFS_Visit(int u);
+void DFS_T();
+void DFS_Visit_T(int u);
+int main()
+{
+    cout<<"How many verticses: "<<endl;
+    cin>>vertices;
+    int i,j;
+    cout<<"Enter adjacency matrix : "<<endl;
+    for( i=1; i<=vertices; i++)
+    {
+        for( j=1; j<=vertices; j++)
+        {
+            cin>>Graph[i][j];
+        }
+    }
+    DFS();
+   cout<<"For Graph G :"<<endl;
+    for(int i=1; i<=vertices; i++)
+        cout<<i<<"->"<<d[i]<<"/"<<f[i]<<endl;
+
+    for( i=1; i<=vertices; i++)
+    {
+        for( j=1; j<=vertices; j++)
+        {
+            GraphT[j][i]=Graph[i][j];
+        }
+    }
+    DFS_T();
+
+    cout<<"For Transpose graph : "<<endl;
+    for(int i=1; i<=vertices; i++)
+        cout<<i<<"->"<<d[i]<<"/"<<f[i]<<endl;
+
+    cout<<"Total strongly connected component is : "<<c<<endl;
+    return 0;
+}
+void DFS_Visit(int u)
+{
+    color[u] = GREY;
+    time = time+1;
+    d[u] = time;
+    for(int v=1; v<=vertices; v++)
+    {
+        if(Graph[u][v] == 1 &&color[v] == WHITE)
+        {
+            DFS_Visit(v);
+
+        }
+    }
+
+    color[u] = BLACK;
+    time = time+1;
+    f[u] = time;
+}
+void DFS_Visit_T(int u)
+{
+
+    color[u] = GREY;
+    time = time+1;
+    d[u] = time;
+    for(int v=1; v<=vertices; v++)
+    {
+        if(GraphT[u][v] == 1 &&color[v] == WHITE)
+        {
+            DFS_Visit_T(v);
+
+        }
+    }
+
+    color[u] = BLACK;
+    time = time+1;
+    f[u] = time;
+   }
+void DFS()
+{
+    for(int u=1; u<=vertices; u++)
+    {
+        color[u] = WHITE;
+    }
+
+    time = 0;
+    for(int u=1; u<=vertices; u++)
+    {
+        if(color[u] == WHITE)
+        {
+             DFS_Visit(u);
+
+        }
+    }
+
+
+}
+void DFS_T()
+{
+
+    for(int u=1; u<=vertices; u++)
+    {
+        color[u] = WHITE;
+    }
+
+    time = 0;
+    for(int i=1;i<=vertices;i++)
+    {
+        index[i]=i;
+    }
+    for( int i=1; i<=vertices; i++)
+    {
+        for( int j=1; j<=vertices; j++)
+        {
+            if(f[i]>=f[j])
+            {
+                swap(f[i],f[j]);
+                swap(index[i],index[j]);
+            }
+        }
+    }
+
+    for(int u=1; u<=vertices; u++)
+    {
+         if(color[index[u]]== WHITE)
+         {
+             DFS_Visit_T(index[u]);
+             c=c+1;
+         }
+
+    }
+
+
+}
+
+//sample input:
+//8
+//0 1 0 0 0 1 0 0
+//0 0 1 0 0 1 0 0
+//0 0 0 1 0 0 1 0
+//0 0 0 0 0 0 0 0
+//1 0 0 0 0 0 0 0
+//0 0 0 0 1 0 1 0
+//0 0 1 0 0 0 0 0
+//0 0 0 0 0 0 1 0
